@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Lab02</title>
+</head>
+<body>
+
+<div class = 'blocks'>
+	<label>Magic</label>
+	<input id="blocks" type="range" min="1" max="50" value="50">
+</div>
+
+<canvas id="canvas" width="700" height="800"></canvas>
+
+
+<style type="text/css">
+	label
+	{
+		margin: 1px 5px;
+		font-family:'Arial', Times, serif;
+		color: #006363;
+		font-size: 200%;
+	}
+	.blocks 
+		{ 
+			margin: 1px 900px;
+		}
+</style>
+
+<script type="text/javascript">
+var ctx = canvas.getContext('2d'),
+    img = new Image(),
+    play = false;
+
+img.onload = pixelate;
+
+img.src = 'http://kartina-optom.com.ua/images/stories/virtuemart/product/quad_21.jpg';
+
+function pixelate(v) 
+{
+    var size = (play ? v : blocks.value) * 0.02,
+
+    w = canvas.width * size,
+    h = canvas.height * size;
+
+    ctx.drawImage(img, 0, 0, w, h);
+
+    ctx.drawImage(canvas, 0, 0, w, h, 0, 0, canvas.width, canvas.height);
+}
+
+blocks.addEventListener('change', pixelate, false);
+
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,74 @@
+<HTML>
+<BODY>
+
+<canvas id='lab_4' height='500' width='1000' style='border-width: 3px' />
+<script>
+var buffer =[];
+var img = new Image();
+img.src = 'img.jpg';
+img.onload = function() {
+  draw(this);
+};
+function draw(img) {
+    var canvas = document.getElementById('lab_4');
+    var ctx = canvas.getContext('2d');
+    //Отрисовка первоначального изображения
+    ctx.drawImage(img, 0, 0);
+    //Объявление переменных, содержащих данные о RGBA пикселей изображения
+    var imageData, ImageRectData, imageSobelData;
+    var data, dataRect, dataSobel; 
+    //Данные об RGBA начального изображения
+    imageData = ctx.getImageData(0,0,img.width,img.height);
+    //Инвертирование изображения в оттенки серого
+    ctx.putImageData(grayscale(imageData),0,0);
+	
+    //Изменение цветов в соответствии с оператором Собеля и запись получившихся RGBA пикселей в массив	
+    var Sobel = function() {
+		for(var j = 1; j < img.height - 1;) {
+			for(var i = 1; i < img.width - 1;) {
+			
+				ImageRectData = ctx.getImageData(i - 1, j - 1, 3, 3);
+				dataRect = ImageRectData.data;
+				
+				var x = (-1 * dataRect[0] + 1 * dataRect[8] - 2 * dataRect[12] + 2 * dataRect [20] - 1 * dataRect[24] + 1 * dataRect [32]);
+				var y = (1 * dataRect[0] + 2 * dataRect[4] + 1 * dataRect[8] - 1 * dataRect [24] - 2 * dataRect[28] - 1 * dataRect [32]);
+				var color = Math.round(Math.sqrt(x * x + y * y));
+				
+				buffer.push(color);
+				buffer.push(color);
+				buffer.push(color);
+				buffer.push(255);
+				
+				i += 1;
+			}
+			j += 1;
+		}
+	};
+	
+	//Вызов функции преобразования данных RGBA в соответствии с оператором Собеля
+	Sobel();
+	//Перенос значений RGBA после преобразований из временного массива Buffer f dataSobel
+	imageSobelData = ctx.getImageData(0,0,img.width - 2,img.height - 2);
+	dataSobel = imageSobelData.data;
+	for(k = 0; k < dataSobel.length; k++) {
+		dataSobel[k] = buffer[k];
+	}
+	//Отрисовка на холсте получившегося в результате преобразований изображения
+	ctx.putImageData(imageSobelData, 600, 0);
+	ctx.drawImage(img, 0, 0);
+}
+function grayscale(grayData)
+		{
+			for(var i = 0; i < grayData.data.length; i+=4)
+			{
+				var grayscale = Math.floor((grayData.data[i] + grayData.data[i+1] + grayData.data[i+2])/3);
+				grayData.data[i] = grayscale;
+				grayData.data[i+1] = grayscale;
+				grayData.data[i+2] = grayscale;
+	    	}
+	    	return grayData;
+		}
+	
+</script> 
+</BODY> 
+</HTML>
